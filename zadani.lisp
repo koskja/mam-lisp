@@ -1,77 +1,6 @@
-;;;; Zadání úloh pro témátko Common Lisp
+;;;; Zadání úloh pro témátko Lisp
 
 (in-package #:cl-user)
-
-;;; ---------------------------------------------------------------------------
-;;; Test harness utilities
-;;; ---------------------------------------------------------------------------
-
-(defstruct test-result
-  (task nil)
-  (description "")
-  (expected nil)
-  (actual nil)
-  (success nil))
-
-(defparameter *test-results* '())
-(defparameter *task-tests* '())
-
-(defun reset-test-results ()
-  (setf *test-results* '()))
-
-(defun record-test-result (task description expected actual success)
-  (push (make-test-result
-         :task task
-         :description description
-         :expected expected
-         :actual actual
-         :success success)
-        *test-results*)
-  success)
-
-(defun approx= (a b &optional (epsilon 1e-6))
-  (and (numberp a)
-       (numberp b)
-       (<= (abs (- a b)) epsilon)))
-
-(defun expect-equal (task description actual expected &key (test #'equal))
-  (let ((success (funcall test actual expected)))
-    (record-test-result task description expected actual success)))
-
-(defun expect-true (task description actual)
-  (expect-equal task description actual t :test #'eq))
-
-(defun expect-false (task description actual)
-  (expect-equal task description actual nil :test #'eq))
-
-(defmacro deftasktest (name (&rest args) &body body)
-  `(progn
-     (defun ,name ,args ,@body)
-     (setf *task-tests*
-           (append (remove #',name *task-tests* :test #'eq)
-                   (list #',name)))
-     ',name))
-
-(defun run-all-task-tests ()
-  (reset-test-results)
-  (dolist (fn *task-tests*)
-    (funcall fn))
-  (nreverse *test-results*))
-
-(defun print-test-report (&optional (results (run-all-task-tests)))
-  (let* ((total (length results))
-         (passed (count-if #'test-result-success results)))
-    (format t "~%--- Test Report (~d/~d passed) ---~%" passed total)
-    (dolist (result results)
-      (format t "~:[FAIL~;PASS~] ~a ~a~%"
-              (test-result-success result)
-              (test-result-task result)
-              (test-result-description result))
-      (unless (test-result-success result)
-        (format t "  expected: ~s~%  actual: ~s~%"
-                (test-result-expected result)
-                (test-result-actual result))))
-    results))
 
 ;;; ---------------------------------------------------------------------------
 ;;; Easy (3 b)
@@ -231,6 +160,110 @@ Výstupem může být řetězec nebo struktura s detaily běhu."
   "Implementujte vlastní malý Scheme: parser, evaluator a REPL."
   ;; TODO: spusťte REPL pomocí getchar a putchar.
   nil)
+
+;;; ---------------------------------------------------------------------------
+;;; Test harness utilities
+;;; ---------------------------------------------------------------------------
+
+(defstruct test-result
+  (task nil)
+  (description "")
+  (expected nil)
+  (actual nil)
+  (success nil)
+  (error nil))
+
+(defparameter *test-results* '())
+(defparameter *task-tests* '())
+
+(defun reset-test-results ()
+  (setf *test-results* '()))
+
+(defun record-test-result (task description expected actual success &optional error)
+  (push (make-test-result
+         :task task
+         :description description
+         :expected expected
+         :actual actual
+         :success success
+         :error error)
+        *test-results*)
+  success)
+
+(defun approx= (a b &optional (epsilon 1e-6))
+  (and (numberp a)
+       (numberp b)
+       (<= (abs (- a b)) epsilon)))
+
+(defmacro expect-equal (task description actual expected &key (test #'equal))
+  (let ((task-var (gensym "TASK"))
+        (description-var (gensym "DESCRIPTION"))
+        (expected-var (gensym "EXPECTED"))
+        (expected-ready-var (gensym "EXPECTED-READY-P"))
+        (actual-var (gensym "ACTUAL"))
+        (test-var (gensym "TEST"))
+        (condition-var (gensym "CONDITION")))
+    `(let ((,task-var ,task)
+           (,description-var ,description))
+       (let ((,test-var ,test)
+             (,expected-var nil)
+             (,expected-ready-var nil))
+         (labels ((%record (actual success &optional error)
+                    (record-test-result ,task-var
+                                        ,description-var
+                                        (if ,expected-ready-var
+                                            ,expected-var
+                                            :unavailable)
+                                        actual
+                                        success
+                                        error)))
+           (handler-case
+               (progn
+                 (setf ,expected-var ,expected
+                       ,expected-ready-var t)
+                 (let ((,actual-var ,actual))
+                   (%record ,actual-var
+                            (funcall ,test-var ,actual-var ,expected-var))))
+             (error (,condition-var)
+               (%record nil nil ,condition-var))))))))
+
+(defmacro expect-true (task description actual)
+  `(expect-equal ,task ,description ,actual t :test #'eq))
+
+(defmacro expect-false (task description actual)
+  `(expect-equal ,task ,description ,actual nil :test #'eq))
+
+(defmacro deftasktest (name (&rest args) &body body)
+  `(progn
+     (defun ,name ,args ,@body)
+     (setf *task-tests*
+           (append (remove #',name *task-tests* :test #'eq)
+                   (list #',name)))
+     ',name))
+
+(defun run-all-task-tests ()
+  (reset-test-results)
+  (dolist (fn *task-tests*)
+    (funcall fn))
+  (nreverse *test-results*))
+
+(defun print-test-report (&optional (results (run-all-task-tests)))
+  (let* ((total (length results))
+         (passed (count-if #'test-result-success results)))
+    (format t "~%--- Test Report (~d/~d passed) ---~%" passed total)
+    (dolist (result results)
+      (format t "~:[FAIL~;PASS~] ~a ~a~%"
+              (test-result-success result)
+              (test-result-task result)
+              (test-result-description result))
+      (unless (test-result-success result)
+        (format t "  expected: ~s~%  actual: ~s~%"
+                (test-result-expected result)
+                (test-result-actual result))
+        (when (test-result-error result)
+          (format t "  error: ~a~%"
+                  (test-result-error result)))))
+    results))
 
 ;;; ---------------------------------------------------------------------------
 ;;; Test harness definitions
@@ -493,3 +526,25 @@ Výstupem může být řetězec nebo struktura s detaily běhu."
                    (not (null (search "25" output)))))))
 
 
+(progn
+  (reset-test-results)
+  (test-easy-sum-two-numbers)
+  ; (test-easy-range-to-n)
+  ; (test-easy-stats)
+  ; (test-balanced-parentheses-p)
+  ; (test-my-length)
+  ; (test-my-reverse)
+  ; (test-my-map)
+  ; (test-my-filter)
+  ; (test-folds)
+  ; (test-split-string)
+  ; (test-my-sort)
+  ; (test-stack)
+  ; (test-queue)
+  ; (test-balanced-multi-brackets)
+  ; (test-bst)
+  ; (test-remove-triple-parentheses)
+  ; (test-run-brainfuck)
+  ; (test-mini-scheme-repl)
+  (print-test-report *test-results*)
+)
