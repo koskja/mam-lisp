@@ -2,9 +2,11 @@
 
 (in-package #:cl-user)
 
-;;; ---------------------------------------------------------------------------
-;;; Easy (3 b)
-;;; ---------------------------------------------------------------------------
+
+;; Funkce s předponou easy jsou zjednodušené verze, které neinteragují s uživatelem. 
+;; Pokud implementujete POUZE funkci s předponou easy, dostanete za ni 0.5 bodu.
+;; Pokud implementujete ALESPOŇ funkci bez předpony easy (tedy variantu interagující s uživatelem), dostanete za ni plný 1 bod.
+;; Pokud implementujete variantu s předponou easy a zároveň variantu bez předpony easy, dostanete za ně plný 1 bod.
 
 (defun easy-sum-two-numbers (a b)
   ;; TODO: vraťte součet.
@@ -24,9 +26,23 @@
 
 ;; (easy-stats '(2 6 4 10)) ; => (5.5 2 10)
 
-;;; ---------------------------------------------------------------------------
-;;; Medium
-;;; ---------------------------------------------------------------------------
+(defun sum-two-numbers ()
+  ;; TODO: načtěte vstup od uživatele a vypište součet.
+  nil)
+
+(defun range-to-n ()
+  ;; TODO: načtěte vstup od uživatele a vypište čísla 1 až n.
+  nil)
+
+(defun stats ()
+  ;; TODO: načtěte vstup od uživatele a vypište průměr, minimum a maximum.
+  nil)
+
+(defparameter *leva-zavorka* #\( )
+(defparameter *prava-zavorka* #\) )
+
+(defun je-zavorka-p (znak)
+  (or (eq znak *leva-zavorka*) (eq znak *prava-zavorka*)))
 
 (defun balanced-parentheses-p (text)
   ;; TODO: vraťte T pokud je text vyvážený, jinak NIL.
@@ -35,50 +51,21 @@
 ;; (balanced-parentheses-p "(()())") ; => T
 ;; (balanced-parentheses-p "(()") ; => NIL
 
-(defun my-length (sequence)
-  "Vlastní tail-call implementace funkce length pro seznamy."
-  ;; TODO: vraťte délku seznamu.
-  0)
-
-(defun my-reverse (sequence)
-  "Vlastní tail-call implementace funkce reverse pro seznamy."
-  ;; TODO: vraťte seznam v opačném pořadí.
-  '())
-
-(defun my-map (fn sequence)
-  "Vlastní tail-call implementace funkce map pro seznamy."
-  ;; TODO: vraťte seznam výsledků aplikace funkce fn na všechny prvky seznamu.
-  '())
-
-(defun my-filter (pred sequence)
-  "Vlastní tail-call implementace funkce filter pro seznamy."
-  ;; TODO: vraťte seznam prvků splňujících predikát.
-  '())
-
-(defun my-left-fold (fn initial sequence)
-  "Tail-call implementace levého fold."
-  ;; TODO: provedťe levý fold nad sekvencí.
-  initial)
-
-(defun my-right-fold (fn initial sequence)
-  "Tail-call implementace pravého fold."
-  ;; TODO: provedťe pravý fold nad sekvencí.
-  initial)
-
-;; (my-map #'sqrt '(4 9 16)) ; => (2 3 4)
-;; (my-filter #'evenp '(1 2 3 4 5)) ; => (2 4)
-;; (my-left-fold #'append '() '((a b) (c) (d e))) ; => (a b c d e)
-;; (my-right-fold #'append '() '((a b) (c) (d e))) ; => (d e c a b)
-
 (defun split-string (string delimiter)
   ;; TODO: vraťte seznam podřetězců oddělených daným oddělovačem. Oddělovač je jeden znak. 
   '())
 
-;; (split-string "a,b,c," ",") ; => '("a" "b" "c" "")
+;; (split-string "a,bb,c," ",") ; => '("a" "b" "c" "")
 
 (defun my-sort (sequence compare-fn)
-  ;; TODO: vraťte sekvenci setříděnou podle porovnávací funkce compare-fn.
+  ;; TODO: vraťte sekvenci setříděnou podle porovnávací funkce compare-fn. 
+  ;; Abyste porovnali dva prvky x a y, zavolejte (funcall compare-fn x y).
+  ;; Prvky seřaďte tak, aby porovnávací funkce vrátila T pro každé dva různé sousední prvky. 
+  ;; To znamená, že pokud je compare-fn operátor <, prvky seřaďte vzestupně, pokud je operátor >, prvky seřaďte sestupně.
+  ;; Detaily přesného chování předávání funkcí jako parametru se budeme věnovat v budoucnu.
   sequence)
+
+;; (my-sort '(3 1 4 1 5 9) #'<) ; => '(1 1 3 4 5 9)
 
 (defun make-stack ()
   ;; TODO: vraťte prázdný zásobník, který budou ostatní operace modifikovat in-place.
@@ -104,10 +91,6 @@
   ;; TODO: vyjměte prvek z čela fronty in-place a vraťte dvojici (prvek stejná-fronta).
   '(nil queue))
 
-;;; ---------------------------------------------------------------------------
-;;; Heavy
-;;; ---------------------------------------------------------------------------
-
 (defun balanced-multi-brackets-p (text)
   ;; TODO: vraťte T pouze pokud je řetězec vyvážený.
   nil)
@@ -115,50 +98,11 @@
 ;; (balanced-multi-brackets-p "{[()()]([]{[()[]]})}") ; => T
 ;; (balanced-multi-brackets-p "{[(])}") ; => NIL
 
-(defun bst-make-empty ()
-  ;; TODO: vraťte prázdný strom.
-  '())
-
-(defun bst-make-copy (tree)
-  ;; TODO: vraťte kopii stromu.
-  nil)
-
-(defun bst-insert (tree value)
-  ;; TODO: vložte hodnotu přímo do existujícího stromu a vraťte tentýž strom.
-  nil)
-
-(defun bst-find (tree value)
-  ;; TODO: vraťte hledaný uzel nebo NIL.
-  nil)
-
-(defun bst-delete (tree value)
-  ;; TODO: odstraňte hodnotu ze stromu in-place a vraťte tentýž strom.
-  nil)
-
-(defun bst-inorder (tree)
-  ;; TODO: vraťte uspořádaný seznam hodnot.
-  '())
-
-(defun remove-triple-parentheses (text)
-  ;; TODO: vraťte normalizovaný řetězec.
-  "")
-
-;; (remove-triple-parentheses "(((abc)))") ; => "abc"
-;; (remove-triple-parentheses "(((((abc)d)))e)") ; => "((abc)de)"
-
-;;; ---------------------------------------------------------------------------
-;;; Ultra heavy
-;;; ---------------------------------------------------------------------------
-
+;; Poskytujeme vám test na interpreter Brainfucku.
 (defun run-brainfuck (source getchar putchar)
   "Napište interpretr pro Brainfuck. source = BF program, getchar = funkce pro čtení znaku, putchar = funkce pro zápis znaku.
 Výstupem může být řetězec nebo struktura s detaily běhu."
   ;; TODO: vykonejte Brainfuck program. Výstup zaznamenejte průběžně pomocí putchar.
-  nil)
-
-(defun mini-scheme-repl (getchar putchar)
-  "Implementujte vlastní malý Scheme: parser, evaluator a REPL."
-  ;; TODO: spusťte REPL pomocí getchar a putchar.
   nil)
 
 ;;; ---------------------------------------------------------------------------
@@ -313,48 +257,6 @@ Výstupem může být řetězec nebo struktura s detaily běhu."
   (expect-false :medium/parens "())("
                 (balanced-parentheses-p "())(")))
 
-(deftasktest test-my-length ()
-  (expect-equal :medium/length "three elements"
-                (my-length '(a b c))
-                3
-                :test #'=)
-  (expect-equal :medium/length "empty list"
-                (my-length '())
-                0
-                :test #'=))
-
-(deftasktest test-my-reverse ()
-  (expect-equal :medium/reverse "numbers"
-                (my-reverse '(1 2 3 4))
-                '(4 3 2 1))
-  (expect-equal :medium/reverse "single value"
-                (my-reverse '(foo))
-                '(foo)))
-
-(deftasktest test-my-map ()
-  (expect-equal :medium/map "square numbers"
-                (my-map (lambda (x) (* x x)) '(2 3 4))
-                '(4 9 16))
-  (expect-equal :medium/map "uppercase symbols"
-                (my-map #'symbol-name '(foo bar))
-                '("FOO" "BAR")))
-
-(deftasktest test-my-filter ()
-  (expect-equal :medium/filter "even numbers"
-                (my-filter #'evenp '(1 2 3 4 5 6))
-                '(2 4 6))
-  (expect-equal :medium/filter "keep positives"
-                (my-filter (lambda (x) (> x 0)) '(-2 -1 0 1 2))
-                '(1 2)))
-
-(deftasktest test-folds ()
-  (expect-equal :medium/left-fold "append lists"
-                (my-left-fold #'append '() '((a b) (c) (d e)))
-                '(a b c d e))
-  (expect-equal :medium/right-fold "append lists"
-                (my-right-fold #'append '() '((a b) (c) (d e)))
-                '(d e c a b)))
-
 (deftasktest test-split-string ()
   (expect-equal :medium/split "comma separated"
                 (split-string "a,b,c" ",")
@@ -454,35 +356,6 @@ Výstupem může být řetězec nebo struktura s detaily běhu."
   (expect-false :heavy/brackets "incorrect nesting"
                 (balanced-multi-brackets-p "[(])")))
 
-(deftasktest test-bst ()
-  (let* ((values '(5 2 7 1 3 6 8))
-         (tree (bst-make-empty)))
-    (dolist (value values)
-      (expect-true :heavy/bst "bst-insert mutates in place"
-                   (eq tree (bst-insert tree value))))
-    (expect-equal :heavy/bst "inorder traversal"
-                  (bst-inorder tree)
-                  '(1 2 3 5 6 7 8))
-    (expect-true :heavy/bst "find existing value returns non-nil"
-                 (not (null (bst-find tree 3))))
-    (expect-false :heavy/bst "find missing value returns nil"
-                  (bst-find tree 42))
-    (expect-true :heavy/bst "bst-delete mutates in place"
-                 (eq tree (bst-delete tree 2)))
-    (expect-equal :heavy/bst "delete value"
-                  (bst-inorder tree)
-                  '(1 3 5 6 7 8))))
-
-(deftasktest test-remove-triple-parentheses ()
-  (expect-equal :heavy/triple-parens "simple triple"
-                (remove-triple-parentheses "(((abc)))")
-                "abc"
-                :test #'string=)
-  (expect-equal :heavy/triple-parens "longer sequence"
-                (remove-triple-parentheses "(((((abc)d)))e)")
-                "((abc)de)"
-                :test #'string=))
-
 (deftasktest test-run-brainfuck ()
   (flet ((run-with-io (source input)
            (let ((input-chars (copy-list (coerce input 'list)))
@@ -506,45 +379,17 @@ Výstupem může být řetězec nebo struktura s detaily běhu."
                   (string (code-char 5))
                   :test #'string=)))
 
-(deftasktest test-mini-scheme-repl ()
-  (labels ((run-scheme-script (script)
-             (let ((input-chars (copy-list (coerce script 'list)))
-                   (output '()))
-               (labels ((getchar ()
-                          (if input-chars
-                              (prog1 (car input-chars)
-                                (setf input-chars (cdr input-chars)))
-                              nil))
-                        (putchar (ch)
-                          (push ch output)))
-                 (let ((result (mini-scheme-repl #'getchar #'putchar)))
-                   (values result (coerce (nreverse output) 'string)))))))
-    (multiple-value-bind (result output)
-        (run-scheme-script "(define (square x) (* x x))\n(square 5)\n")
-      (declare (ignore result))
-      (expect-true :ultra/scheme "output mentions 25"
-                   (not (null (search "25" output)))))))
-
-
 (progn
   (reset-test-results)
   (test-easy-sum-two-numbers)
   ; (test-easy-range-to-n)
   ; (test-easy-stats)
   ; (test-balanced-parentheses-p)
-  ; (test-my-length)
-  ; (test-my-reverse)
-  ; (test-my-map)
-  ; (test-my-filter)
-  ; (test-folds)
   ; (test-split-string)
   ; (test-my-sort)
   ; (test-stack)
   ; (test-queue)
   ; (test-balanced-multi-brackets)
-  ; (test-bst)
-  ; (test-remove-triple-parentheses)
   ; (test-run-brainfuck)
-  ; (test-mini-scheme-repl)
   (print-test-report *test-results*)
 )
