@@ -7,12 +7,12 @@
 ;;; ---------------------------------------------------------------------------
 
 (defun range (argumenty)
-  "Vrátí seznam čísel. Chová se jako range() v Pythonu.
+  "Vrátí seznam čísel.
    
    Možnosti volání:
-   (range n) -> seznam 0..n-1 (krok 1)
-   (range start end) -> seznam start..end-1 (krok 1)
-   (range start end step) -> seznam start..end (s krokem step, nezahrnuje end)"
+   (range end) -> seznam 0..end-1 (krok 1)
+   (range end start) -> seznam start..end-1 (krok 1)
+   (range end start step) -> seznam start..end (s krokem step, nezahrnuje end)"
   ;; TODO: Implementujte funkci range s podporou optional parametrů.
   '())
 
@@ -91,62 +91,6 @@
 
 ;; (replace-symbol x y (+ x y z)) ; => (+ y y z)
 
-;;; ---------------------------------------------------------------------------
-;;; 6. Churchovy booleany (1b)
-;;; ---------------------------------------------------------------------------
-
-(defparameter *church-true* (lambda (x y) x))
-(defparameter *church-false* (lambda (x y) y))
-
-(defun church-to-lisp (church-encoded) 
-  (funcall church-encoded T NIL))
-
-(defun lisp-to-church (lisp-encoded) 
-  (if lisp-encoded *church-true* *church-false*))
-
-(defun church-and (a b)
-  ;; TODO: Implementujte and pro Church booleany.
-  ;; Tabulka:
-  ;; A | B | AND
-  ;; --+---+----
-  ;; T | T | T
-  ;; T | F | F
-  ;; F | T | F
-  ;; F | F | F
-  *church-false*)
-
-(defun church-or (a b)
-  ;; TODO: Implementujte or pro Church booleany.
-  ;; Tabulka:
-  ;; A | B | OR
-  ;; --+---+----
-  ;; T | T | T
-  ;; T | F | T
-  ;; F | T | T
-  ;; F | F | F
-  *church-false*)
-
-(defun church-xor (a b)
-  ;; TODO: Implementujte xor pro Church booleany.
-  ;; Tabulka:
-  ;; A | B | XOR
-  ;; --+---+----
-  ;; T | T | F
-  ;; T | F | T
-  ;; F | T | T
-  ;; F | F | F
-  *church-false*)
-
-(defun church-implies (a b)
-  ;; TODO: Implementujte implies (implikaci) pro Church booleany.
-  ;; Tabulka:
-  ;; A | B | =>
-  ;; --+---+----
-  ;; T | T | T
-  ;; T | F | F
-  ;; F | T | T
-  ;; F | F | T
-  *church-false*)
 
 ;;; ---------------------------------------------------------------------------
 ;;; Test harness utilities
@@ -259,9 +203,9 @@
 (deftasktest test-range ()
   (expect-equal :range "n=5" (range 5) '(0 1 2 3 4))
   (expect-equal :range "n=0" (range 0) '())
-  (expect-equal :range "start=2 end=5" (range 2 5) '(2 3 4))
-  (expect-equal :range "start=0 end=10 step=2" (range 0 10 2) '(0 2 4 6 8))
-  (expect-equal :range "start=10 end=0 step=-2" (range 10 0 -2) '(10 8 6 4 2)))
+  (expect-equal :range "start=2 end=5" (range 5 2) '(2 3 4))
+  (expect-equal :range "start=0 end=10 step=2" (range 10 0 2) '(0 2 4 6 8))
+  (expect-equal :range "start=10 end=0 step=-2" (range 0 10 -2) '(10 8 6 4 2)))
 
 (deftasktest test-odd-cubes ()
   (let ((expected '(1 27 125 343 729)))
@@ -303,16 +247,6 @@
                 (let ((y 2)) (replace-symbol x y (* x (+ x x))))
                 8))
 
-(deftasktest test-church ()
-  (flet ((to-bool (f) (funcall f t nil)))
-    (expect-true :church "and T T" (to-bool (church-and *church-true* *church-true*)))
-    (expect-false :church "and T F" (to-bool (church-and *church-true* *church-false*)))
-    (expect-true :church "or F T" (to-bool (church-or *church-false* *church-true*)))
-    (expect-false :church "or F F" (to-bool (church-or *church-false* *church-false*)))
-    (expect-true :church "xor T F" (to-bool (church-xor *church-true* *church-false*)))
-    (expect-false :church "xor T T" (to-bool (church-xor *church-true* *church-true*)))
-    (expect-false :church "implies T F" (to-bool (church-implies *church-true* *church-false*)))
-    (expect-true :church "implies F F" (to-bool (church-implies *church-false* *church-false*)))))
 
 (progn
   (test-range)
